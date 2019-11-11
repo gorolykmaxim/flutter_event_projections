@@ -1,0 +1,11 @@
+name: flutter_event_projections_example
+
+environment:
+  sdk: ">=2.1.0 <3.0.0"
+
+dependencies:
+  collection: ^1.14.11
+  flutter:
+    sdk: flutter
+  flutter_repository: ^1.0.0
+  flutter_event_projections: ^1.0.1
