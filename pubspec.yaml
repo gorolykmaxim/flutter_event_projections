@@ -1,6 +1,6 @@
 name: flutter_event_projections
 description: Create queries for specific sets of data, that are updated asynchronously like streams.
-version: 1.0.0
+version: 1.0.1
 author: Horoliuk Maksym <goroliuk.maksym@gmail.com>
 homepage: https://github.com/gorolykmaxim/flutter_event_projections
 
