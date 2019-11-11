@@ -46,5 +46,25 @@ void main() {
       // then
       expect(one, another);
     });
+    test('returns map of all entities affected by event to their IDs', () {
+      // given
+      Map<String, int> expectedMap = {'user': 1, 'product': 15, 'item': 32};
+      final event = Event(name, expectedMap);
+      // when
+      final map = event.toMap();
+      // then
+      expect(map, expectedMap);
+    });
+    test('map, returned by the event, should not influence events internal state', () {
+      // given
+      Map<String, int> expectedMap = {'user': 1, 'product': 15, 'item': 32};
+      final event = Event(name, expectedMap);
+      // when
+      final map = event.toMap();
+      map['sale'] = 32;
+      // then
+      expect(event.toMap(), expectedMap);
+      expect(event.getIdOf('sale'), isNull);
+    });
   });
 }

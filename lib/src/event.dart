@@ -34,6 +34,11 @@ class Event<T> {
     return _entityToId[entity];
   }
 
+  /// Return a map of all entities, affected by this event and their IDs.
+  Map<String, T> toMap() {
+    return Map.from(_entityToId);
+  }
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
