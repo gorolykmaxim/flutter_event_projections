@@ -16,15 +16,15 @@ class Query<T, D> {
 
   /// Execute this query when it's [Projection] receives a corresponding [Event].
   ///
-  /// The fact that an [event] has happened may or may not mean that the data
-  /// has changed in the data sources, being queried by this query.
+  /// The fact that an [event] has happened may or may not mean that the data,
+  /// being queried by this query, has changed in the data sources.
   ///
   /// Must never return null. [Projection] ignores null results and does not
   /// notify it's listeners about them.
   Future<D> executeOn(Event<T> event) => Future.value(null);
 }
 
-/// Projection of a [Query] onto a [Stream] of [Event]s.
+/// Projection of a [Stream] of [Event]s onto a [Query] response.
 ///
 /// Projection represents a persistent query of data, that is being continuously
 /// changed. As a result of continuous data change, the response to this query

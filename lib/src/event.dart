@@ -4,12 +4,12 @@ import 'package:collection/collection.dart';
 
 const _mapEquality = MapEquality();
 
-/// An event that is sent from the domain model to the outer world.
+/// An event, that is sent from the domain model to the outer world.
 ///
 /// Each event indicates that something has happened in the domain model.
 ///
 /// Since entities of the domain model can gain and loose attributes frequently
-/// during development, events do not references any of those attributes.
+/// during development, events do not reference any of those attributes.
 /// Event should only reference an object, that identifies the entity, related
 /// to that event. This could be an ID of that entity. Though, passing IDs
 /// of entities in events is possible only in an applications with simple IDs
@@ -34,7 +34,7 @@ class Event<T> {
     return _entityToId[entity];
   }
 
-  /// Return a map of all entities, affected by this event and their IDs.
+  /// Return a map of all entities, affected by this event, and their IDs.
   Map<String, T> toMap() {
     return Map.from(_entityToId);
   }

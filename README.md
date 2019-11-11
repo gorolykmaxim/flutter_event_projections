@@ -24,7 +24,7 @@ class Message {
 ```
 
 When one user sends a message to another user, we would want to know
-about the in our widgets to re-render the status of the user, that is
+about that in our widgets to re-render the status of the user, that is
 sending it.
 Let's create a class that represents this event.
 ```dart
@@ -56,7 +56,7 @@ class User {
 }
 ```
 
-Since our app needs to display a user, sending message and the latest
+Since our app needs to display a user, sending message, and the latest
 message sent, let's create a query for this set of data.
 ```dart
 class GetUserAndHisLastMessage extends Query<Specification, Map<User, Message>> {
@@ -104,8 +104,8 @@ From now on, when a user will publish UserSentMessage event
 sender.postMessage();
 ```
 the GetUserAndHisLastMessage query will be executed automatically and
-it's result will be published to projection's stream, that be accessed
-like:
+it's result will be published to projection's stream, that can be 
+accessed like:
 ```dart
 await for (var userToLatestMessage in projection.stream) {
 // re-render UI for example.
