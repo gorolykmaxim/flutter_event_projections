@@ -71,4 +71,9 @@ class EventStream<T> {
   void publish(Event<T> event) {
     _controller.add(event);
   }
+
+  /// Publish [exception] to this stream.
+  void error(Exception exception) {
+    _controller.addError(exception);
+  }
 }

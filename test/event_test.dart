@@ -6,16 +6,34 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   group('EventStream', () {
+    StreamController<Event<int>> controller;
+    EventStream<int> events;
+    setUp(() {
+      controller = StreamController.broadcast();
+      events = EventStream(controller);
+    });
+    tearDown(() {
+      controller.close();
+    });
     test('publishes event to underlying stream', () {
       // given
-      final controller = StreamController<Event<int>>.broadcast();
-      final events = EventStream(controller);
       final expectedEvent = Event('Dummy Event', <String, int>{});
       // when
+      controller.stream.listen(expectAsync1((event) {
+        expect(event, expectedEvent);
+      }));
       events.publish(expectedEvent);
-      controller.close();
-      // then
-      expect(controller.stream, mayEmit(expectedEvent));
+    });
+    test('publishes error to underlying stream', () {
+      // given
+      final expectedException = Exception('Error has happenned');
+      // when
+      controller.stream
+          .handleError(expectAsync1((e) {
+              expect(e, expectedException);
+          }))
+          .listen((e) {});
+      events.error(expectedException);
     });
   });
   group('Event', () {
