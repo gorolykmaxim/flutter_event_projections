@@ -83,5 +83,25 @@ void main() {
       // then
       expect(projection.stream, emitsDone);
     });
+    test('should execute query when any one of the specified events occurs', () {
+      // given
+      final requiredEventTypes = ['user registered', 'account activated'];
+      final requiredEvents = requiredEventTypes.map((name) => Event(name, <String, int>{})).toList();
+      // Add a "noise" event, which should be ignored.
+      final events = requiredEvents + [Event('thread dump generated', <String, int>{})];
+      projection = Projection(query, requiredEventTypes, sync: true);
+      stream = Stream.fromIterable(events);
+      when(query.execute()).thenAnswer((_) => Future.value(null));
+      for (var event in requiredEvents) {
+        when(query.executeOn(event)).thenAnswer((_) => Future.value(queryResponse));
+      }
+      // when
+      projection.start(stream);
+      // then
+      expect(projection.stream, emitsInOrder([
+        queryResponse,
+        queryResponse
+      ]));
+    });
   });
 }

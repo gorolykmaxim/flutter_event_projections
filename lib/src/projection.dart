@@ -44,7 +44,7 @@ class Projection<T, D> {
   StreamController<D> _outgoingStreamController;
   StreamSubscription _subscription;
   final Query<T, D> _query;
-  final String _eventName;
+  Set<String> _eventNames;
 
   /// Create a projection, that will execute a [_query] each time an event with
   /// [_eventName] happens.
@@ -52,15 +52,19 @@ class Projection<T, D> {
   /// If [sync] is set to true, then a synchronous version of underlying
   /// [StreamController] will be used to post query responses to a corresponding
   /// stream.
-  Projection(this._query, this._eventName, {sync: false}) {
+  Projection(this._query, dynamic eventNames, {sync: false}) {
     _outgoingStreamController = StreamController.broadcast(sync: sync);
+    if (eventNames is String) {
+      eventNames = [eventNames];
+    }
+    _eventNames = Set.from(eventNames);
   }
 
   /// Start listening to event with the specified name on the [stream].
   Future<void> start(Stream<Event<T>> stream) async {
     _incomingStream = stream;
     _subscription = _incomingStream
-        .where((event) => event.name == _eventName)
+        .where((event) => _eventNames.contains(event.name))
         .asyncMap(_query.executeOn)
         .where((response) => response != null)
         .listen((response) => _outgoingStreamController.add(response));
