@@ -52,8 +52,10 @@ class Event<T> {
       name.hashCode ^
       _entityToId.hashCode;
 
-
-
+  @override
+  String toString() {
+    return 'Event{name: $name, _entityToId: $_entityToId}';
+  }
 }
 
 /// Simple proxy to [StreamController].
