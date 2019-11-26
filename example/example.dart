@@ -57,12 +57,12 @@ void main() async {
   ImmutableCollection<User> users;
   ImmutableCollection<Message> messages;
   final controller = StreamController<Event<Specification>>.broadcast();
-  final events = EventStream<Specification>(controller);
+  final events = ObservableEventStream(controller);
   final sender = User(events);
   // Projection
   final query = GetUserAndHisLastMessage(users, messages);
   final projection = Projection(query, UserSentMessage.type);
-  projection.start(controller.stream);
+  projection.start(events.stream);
   // Post message
   sender.postMessage();
   // Get notifications about query result change
