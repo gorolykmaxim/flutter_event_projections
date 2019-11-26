@@ -47,7 +47,11 @@ class Projection<T, D> {
   Set<String> _eventNames;
 
   /// Create a projection, that will execute a [_query] each time an event with
-  /// [_eventName] happens.
+  /// [eventNames] happens.
+  ///
+  /// [eventNames] can be a string, representing single event name, or an
+  /// iterable of event names. In the latter case any event with a name,
+  /// specified in [eventNames] will trigger this projection.
   ///
   /// If [sync] is set to true, then a synchronous version of underlying
   /// [StreamController] will be used to post query responses to a corresponding
