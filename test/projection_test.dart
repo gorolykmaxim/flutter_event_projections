@@ -13,6 +13,7 @@ void main() {
     QueryMock<int, Object> query;
     Event<int> event = Event('Event', {});
     Stream<Event<int>> stream;
+    final expectedError = Exception('error');
     setUp(() {
       stream = Stream.value(event);
       query = QueryMock();
@@ -102,6 +103,24 @@ void main() {
         queryResponse,
         queryResponse
       ]));
+    });
+    test('should fail to execute query for the first time and pass an error to its stream', () {
+      // given
+      stream = Stream.empty();
+      when(query.execute()).thenAnswer((_) => Future.error(expectedError));
+      // when
+      projection.start(stream);
+      // then
+      expect(projection.stream, emitsError(expectedError));
+    });
+    test('should fail to execute query when an event happens and pass an error to its stream', () {
+      // given
+      when(query.execute()).thenAnswer((_) => Future.value(null));
+      when(query.executeOn(event)).thenAnswer((_) => Future.error(expectedError));
+      // when
+      projection.start(stream);
+      // then
+      expect(projection.stream, emitsError(expectedError));
     });
   });
 }

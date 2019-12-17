@@ -1,3 +1,7 @@
+## [1.2.1]
+* You can now listen to errors, that occur inside Query.execute() and
+Query.executeOn(Event), on Projection.stream.
+
 ## [1.2.0]
 * Iterable of event names can now be passed to Projection, meaning any
 of those events will trigger it

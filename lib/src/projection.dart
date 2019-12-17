@@ -39,6 +39,9 @@ class Query<T, D> {
 /// about the queried data.
 ///
 /// Projection also executes it's query at the moment of it's [start].
+///
+/// Projection catches exceptions, thrown by it's [Query]. Such exceptions can
+/// be listened to on it's [stream].
 class Projection<T, D> {
   Stream<Event<T>> _incomingStream;
   StreamController<D> _outgoingStreamController;
@@ -71,11 +74,18 @@ class Projection<T, D> {
         .where((event) => _eventNames.contains(event.name))
         .asyncMap(_query.executeOn)
         .where((response) => response != null)
-        .listen((response) => _outgoingStreamController.add(response));
+        .listen(
+            (response) => _outgoingStreamController.add(response),
+            onError: (error) => _outgoingStreamController.addError(error)
+        );
     _incomingStream = null;
-    final data = await _query.execute();
-    if (data != null) {
-      _outgoingStreamController.add(data);
+    try {
+      final data = await _query.execute();
+      if (data != null) {
+        _outgoingStreamController.add(data);
+      }
+    } on Exception catch (e) {
+      _outgoingStreamController.addError(e);
     }
   }
 
@@ -88,6 +98,6 @@ class Projection<T, D> {
     await _outgoingStreamController.close();
   }
 
-  /// Stream of all query responses.
+  /// Stream of all query responses and exceptions, occurred in those queries.
   Stream<D> get stream => _outgoingStreamController.stream;
 }
