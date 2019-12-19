@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:clock/clock.dart';
 import 'package:collection/collection.dart';
 
 const _mapEquality = MapEquality();
@@ -153,12 +154,17 @@ class Sequential<T> extends AggregationStrategy<T> {
   final EntityMapping _mapping;
   final Set<Event<T>> _occurredEvents = Set();
   final int _timeout;
+  final Clock _clock;
   int _lastMatchingEventOccurrenceTime = 0;
 
   /// Create strategy which creates aggregation of [_expectedEventTypes].
   ///
-  /// Use [_factory] to create an event, that represents an aggregation of
-  /// occurred events.
+  /// New event will have [_newEventName].
+  ///
+  /// By default, while merging two events with the same entity, only one
+  /// of those entities will be present in the new event. In order to merge
+  /// both entities into the new event, they should have different entity names.
+  /// You can achieve that by supplying [mapping] to this strategy.
   ///
   /// If event, that belongs to an aggregation, that is currently being
   /// constructed, does not happen for a [timeout], than the current aggregation
@@ -166,13 +172,18 @@ class Sequential<T> extends AggregationStrategy<T> {
   ///
   /// If [timeout] is set to 0 - incomplete aggregations will not get discarded
   /// over time.
-  Sequential(Iterable<String> expectedEventTypes, this._newEventName, {EntityMapping mapping, int timeout = 0}):
+  ///
+  /// This strategy is aware of current time in order to be able to determine
+  /// timeouts. You can control time inside this strategy by supplying
+  /// [clock].
+  Sequential(Iterable<String> expectedEventTypes, this._newEventName, {EntityMapping mapping, int timeout = 0, Clock clock}):
         _expectedEventTypes = Set.from(expectedEventTypes),
         _mapping = mapping ?? EntityMapping(),
-        _timeout = timeout;
+        _timeout = timeout,
+        _clock = clock ?? Clock();
 
   Event<T> tryToAggregateOn(Event<T> event) {
-    int currentTimeStamp = DateTime.now().millisecondsSinceEpoch;
+    int currentTimeStamp = _clock.now().millisecondsSinceEpoch;
     if (_timeout > 0 && currentTimeStamp > _lastMatchingEventOccurrenceTime + _timeout) {
       _occurredEvents.clear();
     }

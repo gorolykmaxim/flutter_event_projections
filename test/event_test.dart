@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:class_test/class_test.dart';
+import 'package:clock/clock.dart';
 import 'package:flutter_event_projections/src/event.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -72,6 +73,7 @@ class ObservableEventStreamTest extends EventStreamTest {
     })
   ];
   final mapping = EntityMapping();
+  Clock clock;
   ObservableEventStream<int> observableEvents;
   List<Event<int>> receivedEvents;
 
@@ -80,6 +82,7 @@ class ObservableEventStreamTest extends EventStreamTest {
   @override
   void setUp() {
     super.setUp();
+    clock = Clock.fixed(DateTime.now());
     observableEvents = ObservableEventStream(controller);
     events = observableEvents;
     stream = observableEvents.stream;
@@ -93,7 +96,7 @@ class ObservableEventStreamTest extends EventStreamTest {
     super.declareTests();
     declareTest('aggregates multiple events into one sequentially', () {
       // when
-      stream = observableEvents.aggregate(Sequential([breadIsPlasteredWithButter, sausageIsPlacedOnBread], sandwichIsReady, mapping: mapping));
+      stream = observableEvents.aggregate(Sequential([breadIsPlasteredWithButter, sausageIsPlacedOnBread], sandwichIsReady, mapping: mapping, clock: clock));
       stream.listen(expectAsync1((e) {
         receivedEvents.add(e);
         if (receivedEvents.length == expectedAggregations.length) {
@@ -104,7 +107,7 @@ class ObservableEventStreamTest extends EventStreamTest {
     });
     declareTest('aggregates mutliple events into one sequentially keeping track of timeout', () {
       // when
-      stream = observableEvents.aggregate(Sequential([breadIsPlasteredWithButter, sausageIsPlacedOnBread], sandwichIsReady, mapping: mapping, timeout: 500));
+      stream = observableEvents.aggregate(Sequential([breadIsPlasteredWithButter, sausageIsPlacedOnBread], sandwichIsReady, mapping: mapping, timeout: 500, clock: clock));
       stream.listen(expectAsync1((e) {
         receivedEvents.add(e);
         if (receivedEvents.length == expectedAggregations.length) {
@@ -128,7 +131,7 @@ class ObservableEventStreamTest extends EventStreamTest {
         })
       ];
       // when
-      stream = observableEvents.aggregate(Sequential([breadIsPlasteredWithButter, sausageIsPlacedOnBread], sandwichIsReady));
+      stream = observableEvents.aggregate(Sequential([breadIsPlasteredWithButter, sausageIsPlacedOnBread], sandwichIsReady, clock: clock));
       stream.listen(expectAsync1((e) {
         receivedEvents.add(e);
         if (expectedAggregations.length == receivedEvents.length) {
@@ -138,15 +141,18 @@ class ObservableEventStreamTest extends EventStreamTest {
       expectedEvents.forEach((e) => observableEvents.publish(e));
     });
     declareTest('does not aggregate first portion of events due to timeout, but aggregates the second portion', () async {
+      // given
+      final now = DateTime.now();
+      clock = Clock.fixed(now.subtract(Duration(milliseconds: 700)));
       // when
-      stream = observableEvents.aggregate(Sequential([breadIsPlasteredWithButter, sausageIsPlacedOnBread], sandwichIsReady, mapping: mapping, timeout: 500));
+      stream = observableEvents.aggregate(Sequential([breadIsPlasteredWithButter, sausageIsPlacedOnBread], sandwichIsReady, mapping: mapping, timeout: 500, clock: clock));
       stream.listen(expectAsync1((event) {
         expect(event, expectedAggregations[1]);
       }));
       for (var i = 0; i < expectedEvents.length; i++) {
         // Emulate second event missing
         if (i == 1) {
-          await Future.delayed(Duration(milliseconds: 600));
+          clock = Clock.fixed(now);
           continue;
         }
         observableEvents.publish(expectedEvents[i]);

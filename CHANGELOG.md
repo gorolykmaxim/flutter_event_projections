@@ -1,3 +1,8 @@
+## [1.2.2]
+* Fix description of Sequential()
+* Allow passing Clock inside the Sequential() in order to be able to
+control time inside of it
+
 ## [1.2.1]
 * You can now listen to errors, that occur inside Query.execute() and
 Query.executeOn(Event), on Projection.stream.
