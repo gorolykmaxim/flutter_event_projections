@@ -214,6 +214,18 @@ class EventTest extends Test {
       expect(event.toMap(), expectedMap);
       expect(event.getIdOf('sale'), isNull);
     });
+    declareTest('makes string name out of a string', () {
+      expect(Event.makeEventNameFrom(name), name);
+    });
+    declareTest('makes a string name out of a Type', () {
+      expect(Event.makeEventNameFrom(Object), 'Object');
+    });
+    declareTest('creates event with a name that is not string', () {
+      // when
+      final event = Event(Object, {});
+      // then
+      expect(event.name, 'Object');
+    });
   }
 }
 

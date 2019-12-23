@@ -1,3 +1,7 @@
+## [1.3.0]
+* Event name now can be specified as any dynamic value. This allows
+setting event name to a Dart Type
+
 ## [1.2.2]
 * Fix description of Sequential()
 * Allow passing Clock inside the Sequential() in order to be able to

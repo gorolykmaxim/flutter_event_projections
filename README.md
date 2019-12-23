@@ -29,12 +29,9 @@ sending it.
 Let's create a class that represents this event.
 ```dart
 class UserSentMessage extends Event<Specification> {
-  static final type = 'User sent message';
-
   UserSentMessage(String name, Map<String, Specification> entityToId) : super(name, entityToId);
-
-  UserSentMessage.create(String userName): super(type, {'user': Specification().equals('name', userName)});
-  UserSentMessage.from(Event<Specification> origin): super(type, origin.toMap());
+  UserSentMessage.create(String userName): super(UserSentMessage, {'user': Specification().equals('name', userName)});
+  UserSentMessage.from(Event<Specification> origin): super(UserSentMessage, origin.toMap());
 
   Specification get user => getIdOf('user');
 }
@@ -95,7 +92,7 @@ be continuously executed when the UserSentMessage event happens, let's
 create a projection of that event.
 ```dart
 final query = GetUserAndHisLastMessage(users, messages);
-final projection = Projection(query, UserSentMessage.type);
+final projection = Projection(query, UserSentMessage);
 projection.start(events.stream);
 ``` 
 

@@ -23,12 +23,19 @@ class Event<T> {
   final String name;
   final Map<String, T> _entityToId;
 
+  /// Convert value of [name] into a name, that can be assigned to an event.
+  static String makeEventNameFrom(dynamic name) {
+    return name is String ? name : '$name';
+  }
+
   /// Create an event with a [name].
   ///
   /// Describe all entities, that are related to this event, in [entityToId]
   /// map, where each key is an entity name and value is the object, that
   /// identifies it.
-  Event(this.name, Map<String, T> entityToId): _entityToId = Map.from(entityToId);
+  Event(dynamic name, Map<String, T> entityToId)
+      : _entityToId = Map.from(entityToId),
+        this.name = makeEventNameFrom(name);
 
   /// Get identification object of the [entity], that is related to this event.
   T getIdOf(String entity) {
@@ -176,8 +183,8 @@ class Sequential<T> extends AggregationStrategy<T> {
   /// This strategy is aware of current time in order to be able to determine
   /// timeouts. You can control time inside this strategy by supplying
   /// [clock].
-  Sequential(Iterable<String> expectedEventTypes, this._newEventName, {EntityMapping mapping, int timeout = 0, Clock clock}):
-        _expectedEventTypes = Set.from(expectedEventTypes),
+  Sequential(Iterable<dynamic> expectedEventTypes, this._newEventName, {EntityMapping mapping, int timeout = 0, Clock clock}):
+        _expectedEventTypes = expectedEventTypes.map(Event.makeEventNameFrom).toSet(),
         _mapping = mapping ?? EntityMapping(),
         _timeout = timeout,
         _clock = clock ?? Clock();

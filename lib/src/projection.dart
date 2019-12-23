@@ -52,7 +52,7 @@ class Projection<T, D> {
   /// Create a projection, that will execute a [_query] each time an event with
   /// [eventNames] happens.
   ///
-  /// [eventNames] can be a string, representing single event name, or an
+  /// [eventNames] can be a value, representing single event name, or an
   /// iterable of event names. In the latter case any event with a name,
   /// specified in [eventNames] will trigger this projection.
   ///
@@ -61,8 +61,8 @@ class Projection<T, D> {
   /// stream.
   Projection(this._query, dynamic eventNames, {sync: false}) {
     _outgoingStreamController = StreamController.broadcast(sync: sync);
-    if (eventNames is String) {
-      eventNames = [eventNames];
+    if (!(eventNames is Iterable)) {
+      eventNames = [Event.makeEventNameFrom(eventNames)];
     }
     _eventNames = Set.from(eventNames);
   }

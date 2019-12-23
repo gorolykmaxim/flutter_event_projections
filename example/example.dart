@@ -4,12 +4,9 @@ import 'package:flutter_event_projections/flutter_event_projections.dart';
 import 'package:flutter_repository/flutter_repository.dart';
 
 class UserSentMessage extends Event<Specification> {
-  static final type = 'User sent message';
-
   UserSentMessage(String name, Map<String, Specification> entityToId) : super(name, entityToId);
-
-  UserSentMessage.create(String userName): super(type, {'user': Specification().equals('name', userName)});
-  UserSentMessage.from(Event<Specification> origin): super(type, origin.toMap());
+  UserSentMessage.create(String userName): super(UserSentMessage, {'user': Specification().equals('name', userName)});
+  UserSentMessage.from(Event<Specification> origin): super(UserSentMessage, origin.toMap());
 
   Specification get user => getIdOf('user');
 }
@@ -61,7 +58,7 @@ void main() async {
   final sender = User(events);
   // Projection
   final query = GetUserAndHisLastMessage(users, messages);
-  final projection = Projection(query, UserSentMessage.type);
+  final projection = Projection(query, UserSentMessage);
   projection.start(events.stream);
   // Post message
   sender.postMessage();
