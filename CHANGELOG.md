@@ -1,3 +1,6 @@
+## [1.3.1]
+* Fix Projections, that listen for multiple event types
+
 ## [1.3.0]
 * Event name now can be specified as any dynamic value. This allows
 setting event name to a Dart Type

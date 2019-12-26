@@ -61,7 +61,9 @@ class Projection<T, D> {
   /// stream.
   Projection(this._query, dynamic eventNames, {sync: false}) {
     _outgoingStreamController = StreamController.broadcast(sync: sync);
-    if (!(eventNames is Iterable)) {
+    if (eventNames is Iterable) {
+      eventNames = eventNames.map(Event.makeEventNameFrom);
+    } else {
       eventNames = [Event.makeEventNameFrom(eventNames)];
     }
     _eventNames = Set.from(eventNames);
