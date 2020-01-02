@@ -1,3 +1,7 @@
+## [1.4.0]
+* Introduce ProjectionFactory
+* Add mocks for classes, that are frequently used by library users
+
 ## [1.3.1]
 * Fix Projections, that listen for multiple event types
 
