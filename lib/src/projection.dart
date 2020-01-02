@@ -69,6 +69,9 @@ class Projection<T, D> {
     _eventNames = Set.from(eventNames);
   }
 
+  /// Return true if this projection has been started.
+  bool get isStarted => _subscription != null;
+
   /// Start listening to event with the specified name on the [stream].
   Future<void> start(Stream<Event<T>> stream) async {
     _incomingStream = stream;
@@ -102,4 +105,21 @@ class Projection<T, D> {
 
   /// Stream of all query responses and exceptions, occurred in those queries.
   Stream<D> get stream => _outgoingStreamController.stream;
+}
+
+/// Base factory of projections.
+class ProjectionFactory<T> {
+  final ObservableEventStream _eventStream;
+
+  /// Create factory of projections, that will be listening to events, occurring
+  /// on the [_eventStream].
+  ProjectionFactory(this._eventStream);
+
+  /// Create and start a projection for the [query], that will be triggered
+  /// by [eventNames].
+  Projection<T, D> create<D>(Query<T, D> query, dynamic eventNames) {
+    final projection = Projection(query, eventNames);
+    projection.start(_eventStream.stream);
+    return projection;
+  }
 }

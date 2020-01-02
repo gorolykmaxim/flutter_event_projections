@@ -26,6 +26,19 @@ void main() {
     test('should not fail when stopping without starting first', () {
       projection.stop();
     });
+    test('should start a projection', () async {
+      // when
+      await projection.start(stream);
+      // then
+      expect(projection.isStarted, isTrue);
+    });
+    test('should stop started projection', () async {
+      // when
+      await projection.start(stream);
+      await projection.stop();
+      // then
+      expect(projection.isStarted, isFalse);
+    });
     test('should execute query for the first time when projection is started', () {
       // given
       stream = Stream.empty();
@@ -121,6 +134,27 @@ void main() {
       projection.start(stream);
       // then
       expect(projection.stream, emitsError(expectedError));
+    });
+  });
+  group('ProjectionFactory', () {
+    Query<int, Object> query;
+    StreamController<Event<int>> controller;
+    ObservableEventStream eventStream;
+    ProjectionFactory factory;
+    setUp(() {
+      query = QueryMock();
+      controller = StreamController();
+      eventStream = ObservableEventStream(controller);
+      factory = ProjectionFactory(eventStream);
+    });
+    tearDown(() {
+      controller.close();
+    });
+    test('creates and starts a projection', () {
+      // when
+      final projection = factory.create(query, ['event']);
+      // then
+      expect(projection.isStarted, isTrue);
     });
   });
 }
